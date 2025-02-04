@@ -19,7 +19,24 @@ end
 
 alias pamcan=pacman
 alias k=kubectl
+alias tf=terraform
+alias compose="docker compose"
 
+function rider
+    tmux new-session -d -s rider /home/gabe/rider/rider
+    exit
+end
+
+function goland
+    tmux new-session -d -s goland /home/gabe/goland/src/GoLand-2024.3.2/bin/goland
+    exit
+end
+
+function datagrip
+    tmux new-session -d -s datagrip /home/gabe/Applications/datagrip/src/DataGrip-2024.3.3/bin/datagrip
+    exit
+end
+#
 # function fish_prompt
 #   set_color cyan; echo (pwd)
 #   set_color green; echo '> '
@@ -35,6 +52,7 @@ set ANDROID_HOME /home/gabe/Android/Sdk
 set ANDROID_SDK_ROOT /home/gabe/Android/Sdk
 set PATH $ANDROID_HOME/cmdline-tools/latest/bin $ANDROID_HOME/platform-tools $ANDROID_HOME/emulator $PATH
 
+set DOTNET_ROOT $HOME/dotnet
+set PATH $PATH:$HOME/dotnet
+
 set QT_QPA_PLATFORM xcb
-
-

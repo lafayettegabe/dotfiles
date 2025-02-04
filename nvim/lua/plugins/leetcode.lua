@@ -1,16 +1,11 @@
 return {
   "kawre/leetcode.nvim",
   build = ":TSUpdate html",
-  cmd = "Leet",
   dependencies = {
     "nvim-telescope/telescope.nvim",
-    "nvim-lua/plenary.nvim", -- required by telescope
+    "ibhagwan/fzf-lua",
+    "nvim-lua/plenary.nvim",
     "MunifTanjim/nui.nvim",
-
-    -- optional
-    "nvim-treesitter/nvim-treesitter",
-    "rcarriga/nvim-notify",
-    "nvim-tree/nvim-web-devicons",
   },
   opts = {
     -- configuration goes here
@@ -20,16 +15,17 @@ return {
 
       width = "40%", ---@type lc.size
 
+      wrap_text = true, -- Ensure text wraps within the given width
       show_stats = true, ---@type boolean
     },
     plugins = {
       non_standalone = true,
     },
     storage = {
-      home = "~/codes/leetcode/",
-      cache = "~/codes/leetcode/.cache/",
+      home = "/home/gabe/Documents/codes/study/leetcode",
+      cache = "/home/gabe/Documents/codes/study/leetcode/.cache/",
     },
     ---@type boolean
-    image_support = true,
+    --- image_support = true,
   },
 }

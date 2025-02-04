@@ -15,15 +15,39 @@ return {
         "gopls",
         "clangd",
         "pyright",
+        "terraform-ls",
       })
     end,
   },
 
-  -- lsp servers
+  -- treesitter for syntax highlighting
+  {
+    "nvim-treesitter/nvim-treesitter",
+    opts = function(_, opts)
+      if type(opts.ensure_installed) == "table" then
+        vim.list_extend(opts.ensure_installed, {
+          "terraform",
+          "hcl",
+        })
+      end
+    end,
+  },
+
+  -- filetype detection and LSP configuration
   {
     "neovim/nvim-lspconfig",
+    init = function()
+      -- Configure terraform filetype detection
+      vim.cmd([[
+        autocmd BufRead,BufNewFile *.tf,*.tfvars set filetype=terraform
+        autocmd BufRead,BufNewFile *.hcl set filetype=hcl
+        
+        " Format on save for Terraform files
+        autocmd BufWritePre *.tf,*.tfvars lua vim.lsp.buf.format()
+      ]])
+    end,
     opts = {
-      inlay_hints = { enabled = false },
+      inlay_hints = { enabled = true },
       ---@type lspconfig.options
       servers = {
         cssls = {},
@@ -62,75 +86,104 @@ return {
             },
           },
         },
-      },
-      lua_ls = {
-        -- enabled = false,
-        single_file_support = true,
-        settings = {
-          Lua = {
-            workspace = {
-              checkThirdParty = false,
-            },
-            completion = {
-              workspaceWord = true,
-              callSnippet = "Both",
-            },
-            misc = {
-              parameters = {
-                -- "--log-level=trace",
+        gopls = {
+          settings = {
+            gopls = {
+              usePlaceholders = true,
+              completeUnimported = true,
+              staticcheck = true,
+              hints = {
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                compositeLiteralTypes = true,
+                functionTypeParameters = true,
+                parameterNames = true,
+                rangeVariableTypes = true,
               },
             },
-            hint = {
-              enable = true,
-              setType = false,
-              paramType = true,
-              paramName = "Disable",
-              semicolon = "Disable",
-              arrayIndex = "Disable",
-            },
-            doc = {
-              privateName = { "^_" },
-            },
-            type = {
-              castNumberToInteger = true,
-            },
-            diagnostics = {
-              disable = { "incomplete-signature-doc", "trailing-space" },
-              -- enable = false,
-              groupSeverity = {
-                strong = "Warning",
-                strict = "Warning",
+          },
+        },
+        clangd = {},
+        pyright = {},
+        terraformls = {
+          filetypes = { "terraform", "tf", "terraform-vars" },
+          root_dir = function(...)
+            return require("lspconfig.util").root_pattern(".terraform", ".git")(...)
+          end,
+          settings = {
+            terraform = {
+              experimentalFeatures = {
+                validateOnSave = true,
               },
-              groupFileStatus = {
-                ["ambiguity"] = "Opened",
-                ["await"] = "Opened",
-                ["codestyle"] = "None",
-                ["duplicate"] = "Opened",
-                ["global"] = "Opened",
-                ["luadoc"] = "Opened",
-                ["redefined"] = "Opened",
-                ["strict"] = "Opened",
-                ["strong"] = "Opened",
-                ["type-check"] = "Opened",
-                ["unbalanced"] = "Opened",
-                ["unused"] = "Opened",
+              format = {
+                enable = true,
+                formatOnSave = true,
               },
-              unusedLocalExclude = { "_*" },
             },
-            format = {
-              enable = false,
-              defaultConfig = {
-                indent_style = "space",
-                indent_size = "2",
-                continuation_indent_size = "2",
+          },
+        },
+        lua_ls = {
+          single_file_support = true,
+          settings = {
+            Lua = {
+              workspace = {
+                checkThirdParty = false,
+              },
+              completion = {
+                workspaceWord = true,
+                callSnippet = "Both",
+              },
+              misc = {
+                parameters = {},
+              },
+              hint = {
+                enable = true,
+                setType = false,
+                paramType = true,
+                paramName = "Disable",
+                semicolon = "Disable",
+                arrayIndex = "Disable",
+              },
+              doc = {
+                privateName = { "^_" },
+              },
+              type = {
+                castNumberToInteger = true,
+              },
+              diagnostics = {
+                disable = { "incomplete-signature-doc", "trailing-space" },
+                groupSeverity = {
+                  strong = "Warning",
+                  strict = "Warning",
+                },
+                groupFileStatus = {
+                  ["ambiguity"] = "Opened",
+                  ["await"] = "Opened",
+                  ["codestyle"] = "None",
+                  ["duplicate"] = "Opened",
+                  ["global"] = "Opened",
+                  ["luadoc"] = "Opened",
+                  ["redefined"] = "Opened",
+                  ["strict"] = "Opened",
+                  ["strong"] = "Opened",
+                  ["type-check"] = "Opened",
+                  ["unbalanced"] = "Opened",
+                  ["unused"] = "Opened",
+                },
+                unusedLocalExclude = { "_*" },
+              },
+              format = {
+                enable = false,
+                defaultConfig = {
+                  indent_style = "space",
+                  indent_size = "2",
+                  continuation_indent_size = "2",
+                },
               },
             },
           },
         },
       },
-      gopls = {}, -- Go language server
-      clangd = {}, -- C/C++ language server
-      pyright = {}, -- Python language server
     },
     setup = {},
   },

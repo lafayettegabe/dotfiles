@@ -32,11 +32,13 @@ return {
       local function branch_or_placeholder()
         -- First, try to use gitsigns (if available)
         local branch = vim.b.gitsigns_head
-        -- If not available, fallback to using system Git
+
+        -- If not available from gitsigns, use Git command to get branch name
         if not branch or branch == "" then
-          local git_branch = vim.fn.system("git rev-parse --abbrev-ref HEAD 2>/dev/null")
-          branch = vim.trim(git_branch) ~= "" and vim.trim(git_branch) or nil
+          local git_branch = vim.fn.system("git branch --show-current 2>/dev/null")
+          branch = vim.trim(git_branch)
         end
+
         -- If still no branch, fallback to "No Repo"
         return branch and branch ~= "" and branch or "No Repo"
       end
